@@ -1,0 +1,229 @@
+﻿<UserControl x:Class="ENBOrganizer.App.Views.Presets.PresetsView"
+             Name="RootElement"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:entities="clr-namespace:ENBOrganizer.Domain.Entities;assembly=ENBOrganizer.Domain"
+             xmlns:viewModels="clr-namespace:ENBOrganizer.App.ViewModels"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:views="clr-namespace:ENBOrganizer.App.Views"
+             mc:Ignorable="d"
+             DataContext="{Binding Source={StaticResource ViewModelLocator}, Path=PresetsViewModel}">
+    <materialDesign:DialogHost Identifier="PresetNameDialog">
+        <DockPanel Margin="15">
+            <ToolBarTray DockPanel.Dock="Top" ToolBarTray.IsLocked="True">
+                <ToolBar Style="{DynamicResource MaterialDesignToolBar}" Loaded="ToolBar_Loaded">
+					<Button Name="AddButton" ToolTip="添加新预设" Padding="0" Margin="10 0 10 0"
+                            ToolTipService.ShowOnDisabled="True" Click="AddButton_Click">
+                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                            <materialDesign:PackIcon Kind="PlusCircle" Width="24" Height="24" />
+                            <TextBlock Text="添加" Margin="5 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+
+                    <Popup Name="AddPopup" StaysOpen="False" 
+                       Placement="Bottom" PlacementTarget="{Binding ElementName=AddButton}">
+                        <Border Padding="10" BorderBrush="{DynamicResource PrimaryHueDarkBrush}" BorderThickness="1" 
+                            Background="{DynamicResource MaterialDesignPaper}">
+                            <StackPanel Orientation="Vertical">
+								<Button Content="导入文件夹或档案" 
+                                    Command="{Binding OpenAddDialogCommand, Mode=OneTime}"
+                                    Click="Button_Click"
+                                    ToolTip="从文件夹或压缩包创建预设" />
+								<Button Content="导入已安装文件" 
+                                    Command="{Binding ImportInstalledFilesCommand, Mode=OneTime}"
+                                    Margin="0 10 0 0" Click="Button_Click" ToolTipService.ShowDuration="90000">
+                                    <Button.ToolTip>
+                                        <TextBlock>
+                                        以当前的游戏文件夹中所有已知的enb文件来创建预设 
+                                        <LineBreak /><LineBreak />
+                                        已知的enb文件可在主列表中定义。
+                                        </TextBlock>
+                                    </Button.ToolTip>
+                                </Button>
+                                <Button Content="ENBOOST" Margin="0 10 0 0" 
+                                    Command="{Binding OpenAddENBoostPresetCommand, Mode=OneTime}"
+                                    Click="Button_Click"
+                                    ToolTip="创建ENBOOST预设"/>
+                            </StackPanel>
+                        </Border>
+                    </Popup>
+
+                    <Separator />
+
+                    <Button Command="{Binding SyncEnabledPresetsCommand}" 
+                            ToolTip="在游戏文件夹中同步改回已启用的预设(s)"
+                            ToolTipService.ShowOnDisabled="True"
+                            Padding="0" Margin="10 0 10 0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Sync" Width="24" Height="24" />
+							<TextBlock Text="同步" Margin="5 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+
+                    <Button Command="{Binding DisableAllCommand, Mode=OneTime}" 
+                            ToolTip="从当前游戏文件夹中删除所有预设文件"
+                            ToolTipService.ShowOnDisabled="True"
+                            Padding="0" Margin="10 0 10 0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="ImageBrokenVariant" Width="24" Height="24" />
+                            <TextBlock Text="禁用全部" Margin="5 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+
+                    <Separator />
+
+                    <Button Command="{Binding AddGlobalEnbLocalCommand, Mode=OneTime}"
+                            ToolTip="管理全局enblocal.ini文件"
+                            Padding="0" Margin="10 0 10 0">
+                        <StackPanel Orientation="Horizontal">
+                            <materialDesign:PackIcon Kind="Earth" Width="24" Height="24" />
+							<TextBlock Text="全局enblocal" Margin="5 0 0 0" VerticalAlignment="Center" FontWeight="SemiBold" />
+                        </StackPanel>
+                    </Button>
+                </ToolBar>
+            </ToolBarTray>
+
+            <ScrollViewer Width="Auto" VerticalScrollBarVisibility="Auto" Margin="0 10 0 0">
+                <ContentControl>
+                    <ContentControl.Style>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <ItemsControl ItemsSource="{Binding Models, Mode=OneWay}" Margin="0 10 0 0" Padding="6">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate>
+                                                    <WrapPanel Orientation="Horizontal" />
+                                                </ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                            <ItemsControl.ItemTemplate>
+                                                <DataTemplate DataType="{x:Type entities:Preset}">
+                                                    <materialDesign:Card Margin="0 0 5 5" MaxWidth="300">
+                                                        <StackPanel>
+                                                            <Image Source="{Binding ImagePath, Mode=OneWay}" MaxWidth="300" Stretch="UniformToFill" />
+
+                                                            <Grid Margin="10">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                    <RowDefinition />
+                                                                </Grid.RowDefinitions>
+
+                                                                <Grid.ColumnDefinitions>
+                                                                    <ColumnDefinition />
+                                                                    <ColumnDefinition Width="*" />
+                                                                </Grid.ColumnDefinitions>
+
+                                                                <TextBlock Text="{Binding Name, Mode=OneWay}" FontWeight="Medium" FontSize="16" 
+                                                                           TextWrapping="Wrap" Grid.Row="0" Grid.ColumnSpan="2" />
+                                                                <TextBlock Text="{Binding Binary.Name, StringFormat='enb核心：{0}', Mode=OneWay}" 
+                                                                           FontStyle="Italic" TextWrapping="Wrap" Style="{StaticResource CollapsibleTextBlock}"
+                                                                           Margin="0 2 0 0" Grid.Row="1" Grid.ColumnSpan="2" />
+                                                                <TextBlock Text="{Binding Description, Mode=OneWay}" TextWrapping="Wrap" 
+                                                                           Style="{StaticResource CollapsibleTextBlock}" Margin="0 8 0 0"
+                                                                           Grid.Row="2" Grid.ColumnSpan="2" />
+
+                                                                <StackPanel Grid.Row="3" Orientation="Horizontal" Margin="0 8 0 0" VerticalAlignment="Bottom">
+                                                                    <ToggleButton Command="{Binding ElementName=RootElement, Path=DataContext.ChangeStateCommand}"
+                                                                                  CommandParameter="{Binding}" IsChecked="{Binding IsEnabled, Mode=OneWay}"/>
+
+                                                                    <ToggleButton Command="{Binding ElementName=RootElement, Path=DataContext.SwitchGlobalENBLocalCommand}"
+                                                                                  CommandParameter="{Binding}" IsChecked="{Binding IsGlobalENBLocalEnabled, Mode=OneWay}"
+                                                                                  Style="{StaticResource MaterialDesignActionToggleButton}"
+                                                                                  ToolTip="切换全局enblocal.ini" Background="Transparent">
+                                                                        <ToggleButton.Content>
+                                                                            <materialDesign:PackIcon Kind="EarthOff" 
+                                                                                                     Foreground="{DynamicResource PrimaryHueMidForegroundBrush}" />
+                                                                        </ToggleButton.Content>
+                                                                        <materialDesign:ToggleButtonAssist.OnContent>
+                                                                            <materialDesign:PackIcon Kind="Earth"
+                                                                                                     Foreground="{DynamicResource PrimaryHueLightBrush}" />
+                                                                        </materialDesign:ToggleButtonAssist.OnContent>
+                                                                    </ToggleButton>
+                                                                </StackPanel>
+
+                                                                <materialDesign:PopupBox PlacementMode="BottomAndAlignRightEdges" Grid.Row="3"
+                                                                                         StaysOpen="False" Grid.Column="1" Margin="0 0 0 3"
+                                                                                         VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                                                    <StackPanel Orientation="Vertical">
+                                                                        <Button Command="{Binding ElementName=RootElement, Path=DataContext.EditCommand, Mode=OneTime}" 
+                                                                                    CommandParameter="{Binding}">
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="Pencil" />
+                                                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="编辑" />
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                        <Button Command="{Binding ElementName=RootElement, Path=DataContext.ViewFilesCommand, Mode=OneTime}" 
+                                                                                    CommandParameter="{Binding}">
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="Folder" />
+																				<TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="查看文件" />
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                        <Button Command="{Binding ElementName=RootElement, Path=DataContext.ChangeImageCommand, Mode=OneTime}" 
+                                                                                    CommandParameter="{Binding}">
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="Image" />
+																				<TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="更改图像" />
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                        <Button Command="{Binding ElementName=RootElement, Path=DataContext.ClearImageCommand, Mode=OneTime}" 
+                                                                                    CommandParameter="{Binding}">
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="ImageBroken" />
+																				<TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="清除图像" />
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                        <Button Command="{Binding ElementName=RootElement, Path=DataContext.DeleteCommand, Mode=OneTime}"
+                                                                                    CommandParameter="{Binding}">
+                                                                            <StackPanel Orientation="Horizontal">
+                                                                                <materialDesign:PackIcon Kind="Delete" />
+                                                                                <TextBlock Margin="8 0 0 0" VerticalAlignment="Center" Text="删除" />
+                                                                            </StackPanel>
+                                                                        </Button>
+                                                                    </StackPanel>
+                                                                </materialDesign:PopupBox>
+                                                            </Grid>
+                                                        </StackPanel>
+                                                    </materialDesign:Card>
+                                                </DataTemplate>
+                                            </ItemsControl.ItemTemplate>
+                                        </ItemsControl>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding Models.Count}" Value="0">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+												<TextBlock Text="按上面的“+”按钮开始添加预设。" 
+                                                   VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                   Style="{StaticResource MaterialDesignTitleTextBlock}" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+
+                                <DataTrigger Binding="{Binding SettingsService.CurrentGame}" Value="{x:Null}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate>
+												<TextBlock Text="没有选择游戏。" VerticalAlignment="Center" HorizontalAlignment="Center" 
+                                                   Style="{StaticResource MaterialDesignTitleTextBlock}" />
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ContentControl.Style>
+                </ContentControl>
+            </ScrollViewer>
+        </DockPanel>
+    </materialDesign:DialogHost>
+</UserControl>

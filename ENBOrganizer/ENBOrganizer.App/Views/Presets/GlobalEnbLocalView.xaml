@@ -1,0 +1,104 @@
+﻿<UserControl x:Class="ENBOrganizer.App.Views.Presets.GlobalEnbLocalView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ENBOrganizer.App.Views.Presets"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             mc:Ignorable="d"
+             DataContext="{Binding Source={StaticResource ViewModelLocator}, Path=GlobalEnbLocalViewModel}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/Themes/MaterialDesignTheme.GroupBox.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <StackPanel Orientation="Vertical" Margin="10" MaxWidth="700">
+        <TextBlock Text="全局 ENBLocal" Style="{StaticResource MaterialDesignTitleTextBlock}" />
+        <TextBlock TextWrapping="Wrap" Margin="0 5 0 10">
+            使用左窗格来为Skyrim生成一个enblocal.ini文件，或将您的文件粘贴到右窗格中。 
+            <LineBreak />
+            请检查 
+            <Hyperlink NavigateUri="http://wiki.step-project.com/Guide:ENBlocal_INI"
+                       RequestNavigate="Hyperlink_RequestNavigate">
+                enblocal.ini 教程 by STEP
+            </Hyperlink>
+            有关为Skyrim配置enblocal.ini的详细说明。
+        </TextBlock>
+
+        <DockPanel MaxHeight="500">
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="10"
+                        DockPanel.Dock="Bottom" >
+                <Button Content="保存 " Command="{Binding SaveCommand, Mode=OneTime}" />
+                <Button Content="取消" Margin="5 0 0 0" Command="{Binding CancelCommand, Mode=OneTime}"
+                            Style="{StaticResource MaterialDesignFlatButton}" />
+            </StackPanel>
+
+            <GroupBox Header="Skyrim enblocal.ini 生成" DockPanel.Dock="Left">
+                <StackPanel>
+					<Label Content="enb核心版本" Style="{StaticResource InputLabel}" 
+                           HorizontalAlignment="Left" />
+                    <StackPanel Orientation="Horizontal">
+                        <ComboBox Text="{Binding BinaryVersion, Mode=TwoWay}" SelectedIndex="3">
+                            <ComboBoxItem>v236</ComboBoxItem>
+                            <ComboBoxItem>v262</ComboBoxItem>
+                            <ComboBoxItem>v279/v292</ComboBoxItem>
+                            <ComboBoxItem>v308</ComboBoxItem>
+                        </ComboBox>
+                    </StackPanel>
+
+					<CheckBox Content="垂直同步" IsChecked="{Binding IsVsyncEnabled, Mode=TwoWay}" Margin="0 10 0 0" />
+                    <CheckBox Content="强制无边框" 
+                          IsChecked="{Binding IsForceBorderlessEnabled, Mode=TwoWay}" />
+					<CheckBox Content="强制无边框全屏" 
+                          IsChecked="{Binding IsForceBorderlessFullscreenEnabled, Mode=TwoWay}" />
+                    <StackPanel Orientation="Horizontal">
+                        <CheckBox Name="FPSLimiterEnabledCheckbox" IsChecked="{Binding IsFPSLimiterEnabled, Mode=TwoWay}" 
+                      Content="FPS帧数限制 " HorizontalAlignment="Left" />
+                        <TextBox Text="{Binding FPSLimit, Mode=TwoWay}" MinWidth="30" 
+                             Margin="5 0 0 0"
+                             IsEnabled="{Binding Path=IsChecked, ElementName=FPSLimiterEnabledCheckbox}" />
+                    </StackPanel>
+
+					<Label Content="预留内存大小(MB)" Style="{StaticResource InputLabel}" 
+                   HorizontalAlignment="Left" Margin="0 10 0 0" />
+                    <ComboBox Text="{Binding ReservedMemorySize, Mode=TwoWay}" 
+                          SelectedIndex="1" HorizontalAlignment="Left">
+                        <ComboBoxItem>64</ComboBoxItem>
+                        <ComboBoxItem>128</ComboBoxItem>
+                        <ComboBoxItem>256</ComboBoxItem>
+                        <ComboBoxItem>384</ComboBoxItem>
+                        <ComboBoxItem>512</ComboBoxItem>
+                        <ComboBoxItem>640</ComboBoxItem>
+                        <ComboBoxItem>768</ComboBoxItem>
+                        <ComboBoxItem>896</ComboBoxItem>
+                        <ComboBoxItem>1024</ComboBoxItem>
+                    </ComboBox>
+
+					<Label Content=" 显存大小 (MB)" Style="{StaticResource InputLabel}" 
+                   HorizontalAlignment="Left" Margin="0 10 0 0" />
+                    <TextBox Text="{Binding VideoMemorySize, Mode=TwoWay}" 
+                         MinWidth="100" HorizontalAlignment="Left"
+                         materialDesign:HintAssist.Hint="  如果为空，则默认为2000  " />
+
+                    <Button Command="{Binding GenerateENBLocalCommand, Mode=OneTime}"
+                            Style="{StaticResource MaterialDesignFloatingActionMiniButton}"  
+                            Margin="0 10 0 0" HorizontalAlignment="Center" ToolTip="生成">
+                        <materialDesign:PackIcon Kind="ArrowRight" Height="24" Width="24" />
+                    </Button>
+                </StackPanel>
+            </GroupBox>
+
+			<GroupBox Header="原始enblocal.ini文件" DockPanel.Dock="Right" Width="450" 
+                      HorizontalAlignment="Left" Margin="10 0 0 0" 
+                      ScrollViewer.VerticalScrollBarVisibility="Auto">
+                <TextBox Text="{Binding INIFileText, Mode=TwoWay}"
+                         ScrollViewer.VerticalScrollBarVisibility="Visible"
+                         BorderThickness="0" TextWrapping="Wrap" 
+                         AcceptsReturn="True" VerticalContentAlignment="Top" />
+            </GroupBox>
+        </DockPanel>
+    </StackPanel>
+</UserControl>

@@ -1,0 +1,51 @@
+﻿<UserControl x:Class="ENBOrganizer.App.Views.Master.MasterListView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:views="clr-namespace:ENBOrganizer.App.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             Name="RootElement"
+             mc:Ignorable="d"
+             DataContext="{Binding Source={StaticResource ViewModelLocator}, Path=MasterListViewModel}">
+    <DockPanel Margin="15" HorizontalAlignment="Left">
+        <Button Command="{Binding OpenAddDialogCommand, Mode=OneTime}"
+                    Style="{StaticResource MaterialDesignFloatingActionMiniButton}"  Margin="5 0 0 0" 
+                   HorizontalAlignment="Left" ToolTip="添加新的主列表项" DockPanel.Dock="Top">
+            <materialDesign:PackIcon Kind="Plus" Height="24" Width="24" />
+        </Button>
+
+        <DataGrid ItemsSource="{Binding Models, Mode=OneWay}" AutoGenerateColumns="False" 
+                      IsReadOnly="True" VerticalContentAlignment="Center" Margin="0 5 0 0">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="名称">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Name, Mode=OneTime}" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="类型">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Type, Mode=OneTime}" VerticalAlignment="Center" />
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+
+                <DataGridTemplateColumn Header="删除">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding ElementName=RootElement, Path=DataContext.DeleteCommand, Mode=OneTime}" 
+                                        CommandParameter="{Binding}"
+                                        Style="{StaticResource MaterialDesignToolButton}">
+                                <materialDesign:PackIcon Kind="Delete" Foreground="{DynamicResource PrimaryHueLightBrush}" Width="30" />
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>
